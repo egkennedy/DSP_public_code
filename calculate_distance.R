@@ -1,3 +1,6 @@
+#' This function was created by the UC Davis Datalab to measure the distance between
+#' observations and the closest point of the coast
+#' 
 #' Calculate the distance from each point to a shape
 #' @param points points of class `sf`, which can take the form of a `data.frame` as long as it is also an `sf` points object
 #' @param shape shape to measure from, which should be a sf object, where the CRS matches tht of `points`
