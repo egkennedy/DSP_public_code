@@ -5,7 +5,7 @@
 # The summarized dataframe is created with only good data - all questionable observations
 # are eliminated. As such, the dataframe no longer includes quality flags.
 
-# This script takes data after it has gone through seacarb_calc_full_datasets.R
+# This script takes data after it has gone through calculate_carb_params.R
 
 library("tidyverse")
 
