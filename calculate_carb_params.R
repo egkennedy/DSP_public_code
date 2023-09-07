@@ -1,6 +1,4 @@
 # This code is for doing seacarb calculations on the dataset.
-# It assumes data has been formatted according to the 
-# "transform_ncei_for_our_code.R script.
 
 # This calculated the full carbonate parameters for paired discrete samples ONLY,
 # not paired sensor samples. 
@@ -15,18 +13,8 @@ library("seacarb")
 
 
 #  Make bottle-only dataframe to do seacarb calculations -------------------
-load("df_from_ncei_reformatted.Rdata")
+df <- read_csv("MOCHA_full_dsp.csv") 
 
-# Vector of eventual column names for ordering dataframes
-nms <- c("dataset_id","latitude","longitude","depth_m","time_utc",
-         "sample_scheme", "coastal_environment", "t_C","t_flag",
-         "sal_pss","sal_flag","pH_total","pH_flag", "pH_type", "pCO2_uatm","pCO2_flag",
-         "pCO2_type","fCO2_uatm","fCO2_flag","fCO2_type","tCO2_umolkg","tCO2_flag",
-         "tCO2_type","ta_umolkg","ta_flag","ta_type","do_umolkg","do_sat","do_flag",
-         "do_type","chl_ugL","chl_flag","chl_type","si_umolkg","nh4_umolkg","no3_umolkg",
-         "no2_umolkg","po3_umolkg","nutr_flag","nutr_type", "c_fCO2_uatm",
-         "c_pCO2_uatm","c_pH_total","c_CO2_umolkg","c_HCO3_umolkg","c_CO3_umolkg",
-         "c_tCO2_umolkg","c_TA_umolkg","c_omega_ar","c_omega_ca","c_revelle", "distance_offshore")
 
 #Make a full-length dataframe of "good" observations only to later match with the seacarb calcs
 clean_df <- df %>% 

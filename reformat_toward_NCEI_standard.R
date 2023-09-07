@@ -7,7 +7,7 @@
 
 library("tidyverse")
 
-load("full_nd.Rdata")
+full <- read_csv("MOCHA_full_dsp.csv") # For flagging and data totals
 
 
 glimpse(full)

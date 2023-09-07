@@ -2,7 +2,7 @@
 
 library("tidyverse")
 
-load("full_nd.Rdata")
+full <- read_csv("MOCHA_full_dsp.csv") 
 
 #Okay, let's do this as easily as possible.By lat and by date
 filepath <- "NCEI_submission/subset_data/"

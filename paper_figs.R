@@ -36,8 +36,8 @@ plot_style <- list(geom_sf(data = wcoast, fill = "white", color = "#3a3a3a"),
 
 theme_set(theme_bw())
 
-load("clean_all_light.Rdata") # For maps, data density
-load("full_nd.Rdata") # For flagging and data totals
+light <- read_csv("aggregated_daily_dataset.csv") # For maps, data density
+full <- read_csv("MOCHA_full_dsp.csv") # For flagging and data totals
 
 
 #Folder for figs

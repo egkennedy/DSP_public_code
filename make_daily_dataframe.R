@@ -11,7 +11,7 @@ library("tidyverse")
 
 # Make the "clean" dataframe with only good observations -------------------------------------------------------
 
-load("full_discrete_seacarb.Rdata")
+df <- read_csv("MOCHA_full_dsp.csv") 
 
 #make clean dataframes with seacarb calcs
 clean_df <- df %>%
