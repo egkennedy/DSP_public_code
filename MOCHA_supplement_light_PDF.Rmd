@@ -81,13 +81,13 @@ dat <- dat %>%
                                       year = year)) %>% 
   mutate(time_utc = lubridate::ymd_hms(paste(date2, time, sep = " ")))
 
+# Copy the datetime over
+df40$time_utc <- dat$time_utc
+
 # Get the temperature when its missing
 dat <- dat %>% 
   mutate(qc_temp = ifelse(is.na(temp) & !is.na(do_temp), 2, qc_temp)) %>% 
   mutate(temp = ifelse(is.na(temp), do_temp, temp))
-
-# Copy the datetime over
-df40$time_utc <- dat$time_utc
 
 ```
 
@@ -157,16 +157,20 @@ For each of the time series below, we first show all of the data with "unreliabl
 ### Temperature Time Series
 The temperature time series looks plausible. Additional unreliable temperatures may become apparent in property-property plots (next section).
 
-```{r temp_flagging, echo = FALSE, cache = TRUE}
-df40 %>% 
+```{r temp_flagging, echo = FALSE, cache = TRUE, eval = FALSE}
+fig <- df40 %>% 
   mutate(t_flag = factor(t_flag)) %>% 
   ggplot()+
   geom_point(aes(x = time_utc, y = t_C, color = t_flag))+
   labs(x = "Time", y = "Temperature", color = "Initial QC Flag", 
        title = "Original Temperature TS")+
   scale_color_viridis_d()
+png(filename = "supplement_images/T_flag_TS_fig1.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
-df40 %>% 
+
+fig <- df40 %>% 
   mutate(t_flag = factor(t_flag)) %>% 
   filter(t_flag != 3) %>% 
   ggplot()+
@@ -174,20 +178,31 @@ df40 %>%
   labs(x = "Time", y = "Temperature", color = "DO (umol/kg)", 
        title = "Temperature TS: Initial 'Unreliable' Data Removed")+
   scale_color_viridis()
+png(filename = "supplement_images/T_flag_TS_fig2.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 ```
+![Temperature time series with original investigator flags.](supplement_images/T_flag_TS_fig1.png)\
+
+![Temperature TS with unreliable data removed](supplement_images/T_flag_TS_fig2.png)\
 \newpage
+
 ### Dissolved Oxygen Time Series
 
-```{r do_TS, echo = FALSE, cache = TRUE}
-df40 %>% 
+```{r do_TS, echo = FALSE, cache = TRUE, eval = FALSE}
+fig <- df40 %>% 
+  filter(!is.na(do_flag)) %>% 
   mutate(do_flag = factor(do_flag)) %>% 
   ggplot()+
   geom_point(aes(x = time_utc, y = do_umolkg, color = do_flag))+
   labs(x = "Time", y = "DO (umol/kg)", color = "Initial QC Flag", 
        title = "Original Dissolved Oxygen TS")+
   scale_color_viridis_d()
+png(filename = "supplement_images/DO_flag_TS_fig1.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
-df40 %>% 
+fig <- df40 %>% 
   mutate(do_flag = factor(do_flag)) %>% 
   filter(do_flag != 3) %>% 
   ggplot()+
@@ -195,21 +210,32 @@ df40 %>%
   gg_circle(r = 20, days = 20, xc = "2017-11-01", yc = 130)+
   gg_circle(r = 20, days = 20, xc = "2019-07-15", yc = 350)+
   labs(x = "Time", y = "DO (umol/kg)", color = "Temperature", title = "Dissolved Oxygen TS: Initial 'Unreliable' Data Removed")+
-  scale_color_viridis(option = "plasma")
+  scale_color_viridis(option = "plasma")+
+  theme(title = element_text(size = 10))
+png(filename = "supplement_images/DO_flag_TS_fig2.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
 ```
+![DO TS with original quality flags](supplement_images/DO_flag_TS_fig1.png)\
+
+![DO TS with initial unreliable data removed](supplement_images/DO_flag_TS_fig2.png)\
 \newpage
+
 ### pH Time Series
 
-```{r pH_TS, echo = FALSE, cache = TRUE}
-df40 %>% 
+```{r pH_TS, echo = FALSE, cache = TRUE, eval = FALSE}
+fig <- df40 %>% 
   mutate(pH_flag = factor(pH_flag)) %>% 
   ggplot()+
   geom_point(aes(x = time_utc, y = pH_total, color = pH_flag))+
   labs(x = "Time", y = "pH", color = "Initial QC Flag", title = "Original pH TS")+
   scale_color_viridis_d()
+png(filename = "supplement_images/pH_flag_TS_fig1.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
-df40 %>% 
+fig <- df40 %>% 
   mutate(pH_flag = factor(pH_flag)) %>% 
   filter(pH_flag != 3) %>% 
   ggplot()+
@@ -219,26 +245,36 @@ df40 %>%
   labs(x = "Time", y = "pH", color = "Temperature", 
        title = "pH TS: Initial 'Unreliable' Data Removed")+
   scale_color_viridis()
+png(filename = "supplement_images/pH_flag_TS_fig2.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 ```
+![pH time series with original quality flags](supplement_images/pH_flag_TS_fig1.png)\
+
+![pH time series with originally noted "unreliable" data removed](supplement_images/pH_flag_TS_fig2.png)\
 
 As necessary, we examined subsets of time series to get a closer look at the data. Here, we're showing the previous time series from 2019 onward. This highlights a few scattered pH observations in 2020 that seem to have unusual temperatures relative to surrounding data and might be unreliable, though they do not have extreme pH values. These points will be better investigated in property-property plots.
 
-```{r pH_TS_cont, echo = FALSE}
-df40 %>% 
+```{r pH_TS_cont, echo = FALSE, eval = FALSE}
+fig <- df40 %>% 
   filter(time_utc > "2019-01-01") %>% 
   mutate(pH_flag = factor(pH_flag)) %>% 
   filter(pH_flag != 3) %>% 
   ggplot()+
   geom_point(aes(x = time_utc, y = pH_total, color = t_C), alpha = 0.5)+
   gg_circle(r = 0.04, days = 10, xc = "2019-07-20", yc = 8.27)+
-  geom_text(aes(x = ymd_hms("2020-05-01 12:00:00 UTC"), y = 8.25), 
+  geom_text(aes(x = ymd_hms("2020-03-01 12:00:00 UTC"), y = 8.25), 
             label = "Check P-P plots for these\nscattered points below")+
   labs(x = "Time", y = "pH", color = "Temperature", title = "Post 2019 pH TS: Initial 'Unreliable' Data Removed")+
   scale_color_viridis()
+png(filename = "supplement_images/pH_flag_TS_fig3.png", height = 3, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
 ```
-### Apply the additional time series flags
+![pH time series subset](supplement_images/pH_flag_TS_fig3.png)\
 
+### Apply the additional time series flags
 Flag the additional unreliable data identified in the time series plots. Retain the 3 flags for all previously identified unreliable data. Eliminate flags for rows with no data.
 
 Note that this flagging code is based on the specific plots and data shown. Each dataset was examined individually, generic flags based on time or parameter values do not apply across datasets (e.g., the code identifying the 2017 unreliable dissolved oxygen observations is not meant to imply that *all* dissolved oxygen observations before 2018 and below 150 umol/kg are considered unreliable).
@@ -266,26 +302,28 @@ df40 <- df40 %>%
 ```
 
 ## Property-Property QA/QC for Autonomous Sensor Data
-
 With all multiparameter data sets, we used property-property plots to ensure that data relationships were consistent with biological activity, conservative mixing, and other oceanographic considerations. Here, we will focus on dissolved oxygen and pH data that have not been identified as unreliable either in the original author's quality control or in our time series-based secondary quality control discussed above. All pH and DO data that has already been flagged with a 3 QC value has been excluded. "Unreliable" temperature data is retained in these plots to examine how these temperatures might have affected the pH and DO measurements.
 
 ### Property-Property Plots for Dataset 40 Subset
 
-```{r t_do_ppplot, echo = FALSE, cache = TRUE, fig.height = 6}
+```{r t_do_ppplot, echo = FALSE, cache = TRUE, fig.height = 6, eval = FALSE}
 fig1 <- df40 %>% 
   mutate(t_flag = factor(t_flag)) %>% 
   filter(do_flag != 3 & !is.na(do_umolkg)) %>% 
   ggplot()+
   geom_point(aes(x = t_C, y = do_umolkg, color = t_flag), alpha = 0.5)+
   scale_color_viridis_d()+
-  labs(x = "Temperature", y = "DO (umol/kg)", title = "Temperature-DO by Temp Flag", color = "Temp\nQC Flag")
+  labs(x = "Temperature", y = "DO (umol/kg)", title = "Temperature-DO by Temp Flag", color = "Temp\nQC Flag")+
+  theme(title = element_text(size = 10))
 
 fig2 <- df40 %>% 
+  filter(!is.na(t_C) & !is.na(do_umolkg) & !is.na(pH_total)) %>% 
   filter(do_flag != 3 & !is.na(do_umolkg)) %>% 
   ggplot()+
   geom_point(aes(x = t_C, y = do_umolkg, color = pH_total), alpha = 0.5)+
   scale_color_viridis()+
-  labs(x = "Temperature", y = "DO (umol/kg)", title = "Temperature-DO by pH", color = "pH")
+  labs(x = "Temperature", y = "DO (umol/kg)", title = "Temperature-DO by pH", color = "pH")+
+  theme(title = element_text(size = 10))
 
 fig3 <- df40 %>% 
   mutate(t_flag = factor(t_flag)) %>% 
@@ -293,34 +331,50 @@ fig3 <- df40 %>%
   ggplot()+
   geom_point(aes(x = t_C, y = pH_total, color = t_flag), alpha = 0.5)+
   scale_color_viridis_d()+
-  labs(x = "Temperature", y = "pH", title = "Temperature-pH by Temp Flag", color = "Temp\nQC Flag")
+  labs(x = "Temperature", y = "pH", title = "Temperature-pH by Temp Flag", color = "Temp\nQC Flag")+
+  theme(title = element_text(size = 10))
 
 fig4 <- df40 %>% 
+  filter(!is.na(t_C) & !is.na(do_umolkg) & !is.na(pH_total)) %>% 
   filter(pH_flag != 3 & !is.na(pH_total)) %>% 
   ggplot()+
   geom_point(aes(x = t_C, y = pH_total, color = do_umolkg), alpha = 0.5)+
   scale_color_viridis(option = "plasma")+
-  labs(x = "Temperature", y = "pH", title = "Temperature-pH by DO", color = "DO")
+  labs(x = "Temperature", y = "pH", title = "Temperature-pH by DO", color = "DO")+
+  theme(title = element_text(size = 10))
 
-plot_grid(fig1, fig2, fig3, fig4, nrow = 2, ncol = 2)
+fig <- plot_grid(fig1, fig2, fig3, fig4, nrow = 2, ncol = 2)
+png(filename = "supplement_images/property_property_plot_grid.png", height = 4.5, width = 6, units = "in", res = 300)
+print(fig)
+dev.off()
 ```
+![Property-property plots of T, DO, and pH](supplement_images/property_property_plot_grid.png)\
 
-```{r do_pH, echo = FALSE}
-df40 %>% 
+![pH versus DO property-property plot](supplement_images/property_property_pH_vs_DO.png)\
+
+![DO event time series](supplement_images/DO_TS_event_subset.png)\
+```{r do_pH, echo = FALSE, eval = FALSE}
+fig <- df40 %>% 
   filter(pH_flag != 3 & do_flag != 3) %>% 
   ggplot()+
   geom_point(aes(x = pH_total, y = do_umolkg, color = t_C), alpha = 0.4)+
   geom_text(aes(x = 7.8, y = 325), label = "Investigate the low T, high DO points", size = 3)+
   scale_color_viridis()+
-  labs(x = "pH", y = "DO (umol/kg)", title = "pH vs DO by Temperature")
+  labs(x = "pH", y = "DO (umol/kg)", title = "pH vs DO by Temperature", color = "Temperature")
+png(filename = "supplement_images/property_property_pH_vs_DO.png", height = 4, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
-df40 %>% 
+fig <- df40 %>% 
   filter(do_flag != 3 & time_utc > "2019-04-01" & time_utc < "2019-04-30") %>% 
   ggplot()+
   geom_point(aes(x = time_utc, y = do_umolkg, color = t_C), alpha = 0.4)+
   gg_circle(r = 35, days = 1, xc = "2019-04-12", yc = 235)+
   scale_color_viridis()+
-  labs(x = "Time", y = "DO (umol/kg)", title = "Low T, High DO Event")
+  labs(x = "Time", y = "DO (umol/kg)", title = "Low T, High DO Event", color = "Temperature")
+png(filename = "supplement_images/DO_TS_event_subset.png", height = 4, width = 5, units = "in", res = 300)
+print(fig)
+dev.off()
 
 ```
 
@@ -349,7 +403,6 @@ df40 <- df40 %>%
 ```
 
 ## References
-
 Kroeker, K. J., Donham, E. M., Vylet, K., Warren, J. K., Cheresh, J., Fiechter, J., Freiwald, J., and Takeshita, Y.: Exposure to extremes in multiple global change drivers: Characterizing pH , dissolved oxygen, and temperature variability in a dynamic, upwelling dominated ecosystem, Limnol. Oceanogr., 1–13, https://doi.org/10.1002/lno.12371, 2023.
 
 
